@@ -1,2 +1,31 @@
 @import "tailwindcss";
 
+@keyframes slideFromLeft {
+  0% {
+    transform: translateX(-100vw);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFromRight {
+  0% {
+    transform: translateX(100vw);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-from-left {
+  animation: slideFromLeft 2.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-slide-from-right {
+  animation: slideFromRight 2.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}

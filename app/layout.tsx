@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
+import ContentLayout from "./ContentLayout";
 
-import "./globals.css";
+export const metadata: Metadata = {
+  title: "Dev-Weather",
+  description: "Weather app built by Devnodes",
+};
 
 export default function RootLayout({
   children,
@@ -7,9 +12,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en">
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en">
+      <body>
+        <ContentLayout>{children}</ContentLayout>
+      </body>
     </html>
   );
 }

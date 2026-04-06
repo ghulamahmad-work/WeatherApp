@@ -1,10 +1,18 @@
-
+"use client";
+import NavBar from "./components/NavBar";
+import EmptyState from "./components/EmptyState";
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
-        Gona build weather app here!
-      </h1>
+<div className="min-h-screen flex flex-col">
+      <main className="flex flex-col items-center justify-center flex-1 w-full text-center">
+  <NavBar />
+<EmptyState onRequestLocation={() => {
+  // geolocation logic comes here later
+  navigator.geolocation.getCurrentPosition((pos) => {
+    console.log(pos.coords);
+  });
+}} />
+      </main>
     </div>
   );
 }
