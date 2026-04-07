@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ContentLayout from "./ContentLayout";
+import QueryProvider from "./providers/QueryProvider";
 
 export const metadata: Metadata = {
   title: "Dev-Weather",
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ContentLayout>{children}</ContentLayout>
+        <QueryProvider>
+          <ContentLayout>{children}</ContentLayout>
+        </QueryProvider>
       </body>
     </html>
   );

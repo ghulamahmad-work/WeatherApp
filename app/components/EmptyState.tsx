@@ -23,7 +23,7 @@ export default function EmptyState({ onRequestLocation }: EmptyStateProps) {
     Allow location access or search for a city to get started 
   </p>
 
-  <p className="w-full text-left text-lg text-white mb-2">
+  <p className="w-full text-left text-lg text-black mb-2">
     Your weather will appear here once a location is selected 
   </p>
 
@@ -32,7 +32,7 @@ export default function EmptyState({ onRequestLocation }: EmptyStateProps) {
     className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-black text-white text-sm font-medium hover:bg-black/80 cursor-pointer transition-colors"
   >
     <MapPin size={15} />
-    Use current location
+    Current location
   </button>
 </div>
 
