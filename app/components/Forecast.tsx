@@ -1,79 +1,123 @@
-import { Cloud, Sun, CloudRain, Snowflake, Zap } from "lucide-react";
+import { useMemo } from "react";
+import { Wind, Droplets, Sunset, Sunrise } from "lucide-react";
+import { convertTemp, getWeatherIcon, getUVLabel } from "@/app/utils/weatherUtils";
 
 interface ForecastProps {
   forecast: any;
   unit: "C" | "F";
 }
 
-function convertTemp(celsius: number, unit: "C" | "F"): string {
-  if (unit === "F") {
-    return Math.round((celsius * 9) / 5 + 32).toString();
-  }
-  return Math.round(celsius).toString();
-}
-
-function getWeatherIcon(weatherCode: number) {
-  // WMO Weather interpretation codes
-  if (weatherCode === 0) return <Sun className="w-6 h-6 text-yellow-400" />; // Clear sky
-  if (weatherCode >= 1 && weatherCode <= 3) return <Cloud className="w-6 h-6 text-gray-400" />; // Partly cloudy
-  if (weatherCode >= 45 && weatherCode <= 48) return <Cloud className="w-6 h-6 text-gray-300" />; // Fog
-  if (weatherCode >= 51 && weatherCode <= 55) return <CloudRain className="w-6 h-6 text-blue-400" />; // Drizzle
-  if (weatherCode >= 56 && weatherCode <= 57) return <Snowflake className="w-6 h-6 text-blue-200" />; // Freezing drizzle
-  if (weatherCode >= 61 && weatherCode <= 65) return <CloudRain className="w-6 h-6 text-blue-500" />; // Rain
-  if (weatherCode >= 66 && weatherCode <= 67) return <Snowflake className="w-6 h-6 text-blue-300" />; // Freezing rain
-  if (weatherCode >= 71 && weatherCode <= 75) return <Snowflake className="w-6 h-6 text-white" />; // Snow
-  if (weatherCode >= 77) return <Snowflake className="w-6 h-6 text-gray-200" />; // Snow grains
-  if (weatherCode >= 80 && weatherCode <= 82) return <CloudRain className="w-6 h-6 text-blue-600" />; // Rain showers
-  if (weatherCode >= 85 && weatherCode <= 86) return <Snowflake className="w-6 h-6 text-white" />; // Snow showers
-  if (weatherCode >= 95) return <Zap className="w-6 h-6 text-yellow-500" />; // Thunderstorm
-  return <Cloud className="w-6 h-6 text-gray-400" />; // Default
+function formatTime(isoString: string): string {
+  return new Date(isoString).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
 
 export default function Forecast({ forecast, unit }: ForecastProps) {
   const daily = forecast?.daily;
   const unitSymbol = unit === "C" ? "°C" : "°F";
 
+  const { maxTemp, minTemp } = useMemo(() => {
+    if (!daily) return { maxTemp: 0, minTemp: 0 };
+    return {
+      maxTemp: Math.max(...daily.temperature_2m_max.slice(0, 7)),
+      minTemp: Math.min(...daily.temperature_2m_min.slice(0, 7)),
+    };
+  }, [daily]);
+
   if (!daily) return null;
 
   return (
-    <div className="bg-[#1a1a1a]/90 backdrop-blur-sm rounded-2xl p-6 w-full">
-      <h3 className="text-lg font-semibold mb-6 text-white">7-Day Forecast</h3>
-      <div className="space-y-4">
-        {daily.time.slice(0, 7).map((date: string, i: number) => (
-          <div key={date} className="flex items-center justify-between py-2">
-            {/* Day */}
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div className="w-8 text-center">
-                {getWeatherIcon(daily.weather_code[i])}
-              </div>
-              <span className="text-white font-medium text-sm truncate">
-                {i === 0 ? "Today" :
-                 i === 1 ? "Tomorrow" :
-                 new Date(date).toLocaleDateString("en-US", { weekday: "short" })}
-              </span>
-            </div>
+    <div className="backdrop-blur-sm rounded-2xl p-6">
+      <h3 className="text-lg font-semibold mb-6 text-black">Weekly Outlook</h3>
 
-            {/* Precipitation */}
-            <div className="text-blue-400 text-sm mr-4">
-              {daily.precipitation_sum[i] > 0 ? `${daily.precipitation_sum[i]}mm` : ""}
-            </div>
+      <div className="space-y-2">
+        {daily.time.slice(0, 7).map((date: string, i: number) => {
+          const uv = daily.uv_index_max?.[i];
+          const uvInfo = uv !== undefined ? getUVLabel(uv) : null;
+          const rainChance = daily.precipitation_probability_max?.[i];
+          const wind = daily.wind_speed_10m_max?.[i];
+          const sunrise = daily.sunrise?.[i];
+          const sunset = daily.sunset?.[i];
 
-            {/* Temperatures */}
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-gray-400">{convertTemp(daily.temperature_2m_min[i], unit)}{unitSymbol}</span>
-              <div className="w-12 h-1 bg-gray-600 rounded-full relative">
-                <div
-                  className="h-1 bg-white rounded-full absolute left-0 top-0"
-                  style={{
-                    width: `${((daily.temperature_2m_max[i] - daily.temperature_2m_min[i]) /
-                           (Math.max(...daily.temperature_2m_max.slice(0, 7)) - Math.min(...daily.temperature_2m_min.slice(0, 7)))) * 100}%`
-                  }}
-                />
+          return (
+            <div
+              key={date}
+              className="flex flex-wrap md:flex-nowrap items-center justify-between gap-y-4 md:gap-y-0 py-3 px-4 rounded-xl bg-black/9 hover:bg-black/10 transition-colors"
+            >
+              {/* Icon + Day */}
+              <div className="flex items-center gap-3 w-1/2 md:w-36 shrink-0">
+                {getWeatherIcon(daily.weather_code[i], "w-6 h-6")}
+                <span className="text-black font-medium text-sm">
+                  {i === 0 ? "Today" : i === 1 ? "Tomorrow" :
+                    new Date(date).toLocaleDateString("en-US", { weekday: "long" })}
+                </span>
               </div>
-              <span className="text-white font-medium">{convertTemp(daily.temperature_2m_max[i], unit)}{unitSymbol}</span>
+
+              {/* Temp range bar (Moved up in DOM so it shares top row on mobile with Icon) */}
+              <div className="flex items-center justify-end md:justify-center gap-2 text-sm shrink-0 w-1/2 md:w-auto md:order-last">
+                <span className="text-black w-8 md:w-10 text-right">
+                  {convertTemp(daily.temperature_2m_min[i], unit)}{unitSymbol}
+                </span>
+                <div className="w-16 md:w-20 h-1.5 bg-black/10 rounded-full relative">
+                  <div
+                    className="h-1.5 bg-black/40 rounded-full absolute top-0"
+                    style={{
+                      left: `${((daily.temperature_2m_min[i] - minTemp) / (maxTemp - minTemp)) * 100}%`,
+                      width: `${((daily.temperature_2m_max[i] - daily.temperature_2m_min[i]) / (maxTemp - minTemp)) * 100}%`,
+                    }}
+                  />
+                </div>
+                <span className="text-black font-medium w-8 md:w-10">
+                  {convertTemp(daily.temperature_2m_max[i], unit)}{unitSymbol}
+                </span>
+              </div>
+
+              {/* Rain chance */}
+              <div className="flex items-center gap-1 w-1/4 md:w-16 shrink-0 md:justify-center">
+                <Droplets className="w-3 h-3 md:w-4 md:h-4 text-blue-500" />
+                <span className="text-black text-xs md:text-sm">
+                  {rainChance !== undefined ? `${rainChance}%` : "—"}
+                </span>
+              </div>
+
+              {/* Wind */}
+              <div className="flex items-center gap-1 w-1/4 md:w-24 shrink-0 md:justify-center">
+                <Wind className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                <span className="text-black text-xs md:text-sm">
+                  {wind !== undefined ? `${Math.round(wind)} km/h` : "—"}
+                </span>
+              </div>
+
+              {/* UV Index */}
+              <div className="w-1/4 md:w-30 shrink-0 md:text-center flex items-center">
+                {uv !== undefined && (
+                  <span className="text-xs md:text-sm font-medium text-black">
+                    UV {Math.round(uv)}<span className="hidden md:inline"> · {getUVLabel(uv)}</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Sunrise / Sunset */}
+              <div className="flex flex-col sm:flex-row items-end sm:items-center justify-center gap-1 sm:gap-3 w-1/4 md:w-40 shrink-0 md:justify-center">
+                {sunrise && (
+                  <div className="flex items-center gap-1">
+                    <Sunrise className="w-3 h-3 md:w-4 md:h-4 text-orange-300" />
+                    <span className="text-black text-[10px] md:text-xs">{formatTime(sunrise)}</span>
+                  </div>
+                )}
+                {sunset && (
+                  <div className="flex items-center gap-1">
+                    <Sunset className="w-3 h-3 md:w-4 md:h-4 text-blue-800" />
+                    <span className="text-black text-[10px] md:text-xs">{formatTime(sunset)}</span>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

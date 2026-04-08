@@ -42,9 +42,10 @@ export async function getCurrentWeather(latitude: number, longitude: number) {
 }
 
 // Get 7-day daily forecast by coordinates
+// Get 7-day daily forecast by coordinates
 export async function getForecast(latitude: number, longitude: number) {
   const res = await fetch(
-    `${WEATHER_URL}/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`
+    `${WEATHER_URL}/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,uv_index_max,sunrise,sunset&timezone=auto`
   );
   if (!res.ok) throw new Error("Failed to fetch forecast");
   return res.json();

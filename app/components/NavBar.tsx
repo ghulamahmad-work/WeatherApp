@@ -1,7 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import { Search, MapPin } from "lucide-react";
+import { useCitySearch } from "@/app/hooks/UseWeather";
 
 interface City {
   id: number;
@@ -13,36 +14,41 @@ interface City {
 }
 
 interface NavBarProps {
-  query: string;
-  onQueryChange: (q: string) => void;
-  cities: City[];
-  isCitySearching: boolean;
-  onCitySelect: (city: City) => void;
+  onLocationSelect: (location: City) => void;
   unit: "C" | "F";
   onUnitChange: (unit: "C" | "F") => void;
   onRequestLocation: () => void;
 }
 
 export default function NavBar({
-  query,
-  onQueryChange,
-  cities,
-  isCitySearching,
-  onCitySelect,
+  onLocationSelect,
   unit,
   onUnitChange,
   onRequestLocation,
 }: NavBarProps) {
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [query, setQuery] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { data: cities = [], isLoading: isCitySearching } = useCitySearch(query);
 
-  useEffect(() => {
-    setShowDropdown(query.length > 2 && (isCitySearching || cities.length > 0));
-  }, [query, cities, isCitySearching]);
+  const showDropdown = useMemo(() => {
+    return dropdownOpen && query.length > 2 && (isCitySearching || cities.length > 0);
+  }, [query, isCitySearching, cities, dropdownOpen]);
+
+  const handleQueryChange = (val: string) => {
+    setQuery(val);
+    setDropdownOpen(true);
+  };
+
+  const handleCitySelect = (city: City) => {
+    onLocationSelect(city);
+    setQuery("");
+    setDropdownOpen(false);
+  };
 
   return (
-    <nav className="w-full border-b border-[#2c2c2c] bg-[#080808] px-7 py-2.5 grid grid-cols-3 items-center gap-4 relative z-50">
+    <nav className="w-full border-b border-[#2c2c2c] bg-[#080808] px-4 md:px-7 py-3 md:py-2.5 flex flex-col md:grid md:grid-cols-3 items-center gap-3 md:gap-4 relative z-50">
       {/* Logo */}
-      <div className="flex items-center gap-2">
+      <div className="flex justify-center md:justify-start w-full md:w-auto">
         <Image
           src="/devnodes.webp"
           alt="Devnodes"
@@ -54,14 +60,14 @@ export default function NavBar({
       </div>
 
       {/* Search + Dropdown */}
-      <div className="flex justify-center">
+      <div className="flex justify-center w-full">
         <div className="max-w-md w-full relative">
           <div className="flex items-center gap-2 bg-[#979797] border-gray-200 rounded-lg px-3.5 py-2.5">
             <Search size={24} color="#FFFFFF" />
             <input
               type="text"
               value={query}
-              onChange={(e) => onQueryChange(e.target.value)}
+              onChange={(e) => handleQueryChange(e.target.value)}
               placeholder="Search any city or location"
               autoFocus
               className="bg-transparent text-md text-white placeholder:text-white outline-none w-full"
@@ -75,13 +81,10 @@ export default function NavBar({
             ) : cities.length === 0 ? (
               <div className="px-4 py-3 text-gray-400 text-sm">No cities found</div>
             ) : (
-              cities.map((city) => (
+              cities.map((city: City) => (
                 <button
                   key={city.id}
-                  onClick={() => {
-                    onCitySelect(city);
-                    setShowDropdown(false);
-                  }}
+                  onClick={() => handleCitySelect(city)}
                   className="w-full text-left px-4 py-3 text-white text-sm hover:bg-[#2c2c2c] transition-colors border-b border-[#2c2c2c] last:border-0"
                 >
                   {city.name}
@@ -95,7 +98,7 @@ export default function NavBar({
       </div>
 
       {/* Buttons */}
-      <div className="flex items-center justify-end gap-3">
+      <div className="flex items-center justify-center md:justify-end gap-3 w-full md:w-auto">
         {/* Current Location Button */}
         <button
           onClick={onRequestLocation}

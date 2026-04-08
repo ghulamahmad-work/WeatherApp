@@ -12,7 +12,7 @@ export default function ContentLayout({
   const [showSplash, setShowSplash] = useState(true);
 
   return (
-    <div className="min-h-full flex flex-col bg-[#979797]">
+    <div className="min-h-full flex flex-col bg-[#d0d0d0]">
       <div className={`transition-opacity duration-500 delay-300 ${showSplash ? "opacity-0" : "opacity-100"}`}>
         {children}
       </div>
