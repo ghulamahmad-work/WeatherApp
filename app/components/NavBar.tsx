@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import Image from "next/image";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, Loader2 } from "lucide-react";
 import { useCitySearch } from "@/app/hooks/UseWeather";
 
 interface City {
@@ -18,6 +18,7 @@ interface NavBarProps {
   unit: "C" | "F";
   onUnitChange: (unit: "C" | "F") => void;
   onRequestLocation: () => void;
+  isLocating?: boolean;
 }
 
 export default function NavBar({
@@ -25,6 +26,7 @@ export default function NavBar({
   unit,
   onUnitChange,
   onRequestLocation,
+  isLocating = false,
 }: NavBarProps) {
   const [query, setQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -124,18 +126,31 @@ export default function NavBar({
   {/* Mobile + Tablet → Icon */}
   <button
     onClick={onRequestLocation}
-    className="lg:hidden text-white"
+    disabled={isLocating}
+    className={`lg:hidden text-white ${isLocating ? "opacity-50" : ""}`}
   >
-    <MapPin size={22} />
+    {isLocating ? <Loader2 size={22} className="animate-spin" /> : <MapPin size={22} />}
   </button>
 
   {/* Desktop only → Full button */}
   <button
     onClick={onRequestLocation}
-    className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1a1a1a] text-white text-sm font-medium hover:bg-[#2c2c2c] transition-colors border border-[#2c2c2c]"
+    disabled={isLocating}
+    className={`hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1a1a1a] text-white text-sm font-medium transition-all border border-[#2c2c2c] ${
+      isLocating ? "opacity-70 cursor-not-allowed" : "hover:bg-[#2c2c2c]"
+    }`}
   >
-    <MapPin size={16} />
-    Use Current Location
+    {isLocating ? (
+      <>
+        <Loader2 size={16} className="animate-spin" />
+        Locating...
+      </>
+    ) : (
+      <>
+        <MapPin size={16} />
+        Use Current Location
+      </>
+    )}
   </button>
 </>
 

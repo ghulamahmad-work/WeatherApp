@@ -5,6 +5,7 @@ import EmptyState from "./components/EmptyState";
 import CurrentWeather from "./components/CurrentWeather";
 import HourlyForecast from "./components/HourlyForecast";
 import Forecast from "./components/Forecast";
+import { AlertCircle, RotateCcw, Loader2, MapPin } from "lucide-react";
 import {
   CurrentWeatherSkeleton,
   HourlyForecastSkeleton,
@@ -33,6 +34,8 @@ interface City {
 export default function Home() {
   const [location, setLocation] = useState<Location | null>(null);
   const [unit, setUnit] = useState<"C" | "F">("C");
+  const [isLocating, setIsLocating] = useState(false);
+  const [geoError, setGeoError] = useState<string | null>(null);
 
   const {
     data: weather,
@@ -56,6 +59,9 @@ export default function Home() {
   }
 
   function handleGeolocation() {
+    setIsLocating(true);
+    setGeoError(null);
+
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
@@ -75,9 +81,29 @@ export default function Home() {
             latitude,
             longitude,
           });
+        } finally {
+          setIsLocating(false);
         }
       },
-      (err) => console.error("Geolocation error:", err),
+      (err) => {
+        console.error("Geolocation error:", err);
+        setIsLocating(false);
+        
+        switch (err.code) {
+          case err.PERMISSION_DENIED:
+            setGeoError("Location permission denied. Please allow access to use this feature.");
+            break;
+          case err.POSITION_UNAVAILABLE:
+            setGeoError("Location unavailable. Please ensure your device's GPS is turned on.");
+            break;
+          case err.TIMEOUT:
+            setGeoError("Location request timed out. Please try again.");
+            break;
+          default:
+            setGeoError("An unknown error occurred while getting your location.");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
     );
   }
 
@@ -91,6 +117,7 @@ export default function Home() {
         unit={unit}
         onUnitChange={setUnit}
         onRequestLocation={handleGeolocation}
+        isLocating={isLocating}
       />
       <main className="flex-1 w-full h-full overflow-hidden flex flex-col relative">
         {!location ? (
@@ -103,7 +130,26 @@ export default function Home() {
             }}
           >
             <div className="relative z-10 w-full h-full flex flex-col items-center justify-center">
-              <EmptyState onRequestLocation={handleGeolocation} />
+              <div className="max-w-xl w-full">
+                {geoError && (
+                  <div className="mx-4 mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 backdrop-blur-md flex items-start gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-red-500">{geoError}</p>
+                      <p className="text-xs text-red-500/70 mt-1">
+                        Try turning on your device's location switch and refreshing.
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => setGeoError(null)}
+                      className="text-red-500/50 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+                <EmptyState onRequestLocation={handleGeolocation} isLocating={isLocating} />
+              </div>
             </div>
           </div>
         ) : (

@@ -1,10 +1,11 @@
 "use client";
-import { MapPin } from "lucide-react";
+import { MapPin, Loader2 } from "lucide-react";
 interface EmptyStateProps {
   onRequestLocation: () => void;
+  isLocating?: boolean;
 }
 
-export default function EmptyState({ onRequestLocation }: EmptyStateProps) {
+export default function EmptyState({ onRequestLocation, isLocating = false }: EmptyStateProps) {
   return (
     <div className="flex flex-col md:flex-row items-center flex-1 px-4 md:px-12 py-8 md:py-0">
       {/* Top/Left — Big Location Icon */}
@@ -29,10 +30,22 @@ export default function EmptyState({ onRequestLocation }: EmptyStateProps) {
 
         <button
           onClick={onRequestLocation}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-black text-white text-sm font-medium hover:bg-black/80 cursor-pointer transition-colors mt-2"
+          disabled={isLocating}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg bg-black text-white text-sm font-medium transition-colors mt-2 ${
+            isLocating ? "opacity-70 cursor-not-allowed" : "hover:bg-black/80 cursor-pointer"
+          }`}
         >
-          <MapPin size={15} />
-          Current location
+          {isLocating ? (
+            <>
+              <Loader2 size={15} className="animate-spin" />
+              Locating...
+            </>
+          ) : (
+            <>
+              <MapPin size={15} />
+              Current location
+            </>
+          )}
         </button>
       </div>
     </div>
