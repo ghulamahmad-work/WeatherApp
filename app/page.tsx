@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import NavBar from "./components/NavBar";
 import EmptyState from "./components/EmptyState";
 import CurrentWeather from "./components/CurrentWeather";
@@ -153,3 +153,4 @@ export default function Home() {
     </div>
   );
 }
+
