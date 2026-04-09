@@ -53,7 +53,7 @@ export function HourlyForecastSkeleton() {
           {Array.from({ length: 10 }).map((_, i) => (
             <div
               key={i}
-              className="flex flex-col items-center gap-3 p-12 rounded-xl min-w-[80px] bg-black/5"
+              className="flex flex-col items-center gap-3 p-12 rounded-xl min-w-20 bg-black/5"
             >
               {/* Time label */}
               <Bone className="h-3 w-10" />

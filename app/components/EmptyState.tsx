@@ -15,7 +15,7 @@ export default function EmptyState({ onRequestLocation }: EmptyStateProps) {
       </div>
 
       {/* Divider */}
-      <div className="h-[1px] w-full max-w-xs md:w-[2px] md:h-48 bg-black/20 my-8 md:my-0 md:mx-6" />
+      <div className="h-px w-full max-w-xs md:w-0.5 md:h-48 bg-black/20 my-8 md:my-0 md:mx-6" />
 
       {/* Bottom/Right — Text + Button */}
       <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left gap-3 w-full">

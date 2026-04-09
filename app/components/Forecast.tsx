@@ -30,7 +30,7 @@ export default function Forecast({ forecast, unit }: ForecastProps) {
   if (!daily) return null;
 
   return (
-    <div className="backdrop-blur-sm rounded-2xl p-6">
+    <div className="backdrop-blur-sm rounded-2xl p-2">
       <h3 className="text-lg font-semibold mb-6 text-black">Weekly Outlook</h3>
 
       <div className="space-y-2">
@@ -61,15 +61,7 @@ export default function Forecast({ forecast, unit }: ForecastProps) {
                 <span className="text-black w-8 md:w-10 text-right">
                   {convertTemp(daily.temperature_2m_min[i], unit)}{unitSymbol}
                 </span>
-                <div className="w-16 md:w-20 h-1.5 bg-black/10 rounded-full relative">
-                  <div
-                    className="h-1.5 bg-black/40 rounded-full absolute top-0"
-                    style={{
-                      left: `${((daily.temperature_2m_min[i] - minTemp) / (maxTemp - minTemp)) * 100}%`,
-                      width: `${((daily.temperature_2m_max[i] - daily.temperature_2m_min[i]) / (maxTemp - minTemp)) * 100}%`,
-                    }}
-                  />
-                </div>
+
                 <span className="text-black font-medium w-8 md:w-10">
                   {convertTemp(daily.temperature_2m_max[i], unit)}{unitSymbol}
                 </span>
