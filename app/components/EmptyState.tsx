@@ -7,7 +7,7 @@ interface EmptyStateProps {
 
 export default function EmptyState({ onRequestLocation, isLocating = false }: EmptyStateProps) {
   return (
-    <div className="flex flex-col md:flex-row items-center flex-1 px-4 md:px-12 py-8 md:py-0">
+    <div className="flex flex-col md:flex-row items-center flex-1 px-4 md:px-0 py-8 md:py-0">
       {/* Top/Left — Big Location Icon */}
       <div className="flex-1 flex items-center justify-center w-full">
         <div className="w-40 h-40 md:w-50 md:h-50 rounded-full bg-black border flex items-center justify-center">
