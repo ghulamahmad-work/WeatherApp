@@ -36,6 +36,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   const [location, setLocation] = useState<Location | null>(null);
   const [unit, setUnit] = useState<"C" | "F">("C");
   const [isSyncing, setIsSyncing] = useState(true);
+  const [locationSource, setLocationSource] = useState<"detected" | "manual" | "saved">("saved");
 
   const { 
     isLoading: isGeoLoading, 
@@ -84,6 +85,9 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (coords) {
       const fetchCity = async () => {
+        // If user already manually selected a location, don't overwrite it automatically
+        if (locationSource === "manual") return;
+
         try {
           const locationData = await reverseGeocode(coords.latitude, coords.longitude);
           setLocation({
@@ -92,6 +96,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
             latitude: coords.latitude,
             longitude: coords.longitude,
           });
+          setLocationSource("detected");
         } catch (err) {
           console.error("Geocoding error:", err);
           setLocation({
@@ -100,6 +105,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
             latitude: coords.latitude,
             longitude: coords.longitude,
           });
+          setLocationSource("detected");
         }
       };
       fetchCity();
@@ -116,9 +122,11 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
       latitude: city.latitude,
       longitude: city.longitude,
     });
+    setLocationSource("manual");
   }, []);
 
   const onRequestLocation = useCallback(() => {
+    setLocationSource("detected"); // Reset source when manually requesting current location
     getPosition({ enableHighAccuracy: true, timeout: 10000 });
   }, [getPosition]);
 

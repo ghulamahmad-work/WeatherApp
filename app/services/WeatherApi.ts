@@ -18,6 +18,7 @@ async function weatherFetch(url: string, options: RequestOptions = {}) {
     const response = await fetch(url, {
       ...rest,
       signal: controller.signal,
+      cache: "no-cache", // Prevent browser from returning stale JSON
     });
 
     if (!response.ok) {

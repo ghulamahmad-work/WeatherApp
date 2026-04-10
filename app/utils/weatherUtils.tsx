@@ -1,8 +1,8 @@
 import { Cloud, Sun, CloudRain, Snowflake, Zap, Eye } from "lucide-react";
 
 export function convertTemp(celsius: number, unit: "C" | "F"): string {
-  if (unit === "F") return Math.round((celsius * 9) / 5 + 32).toString();
-  return Math.round(celsius).toString();
+  const value = unit === "F" ? (celsius * 9) / 5 + 32 : celsius;
+  return value.toFixed(1);
 }
 
 export function getWeatherIcon(weatherCode: number, className: string = "w-6 h-6") {

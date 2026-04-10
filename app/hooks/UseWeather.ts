@@ -16,7 +16,7 @@ export function useWeather(latitude: number | null, longitude: number | null) {
   return useQuery<WeatherData>({
     queryKey: weatherKeys.current(latitude, longitude),
     queryFn: () => getCurrentWeather(latitude!, longitude!),
-    enabled: !!latitude && !!longitude,
+    enabled: latitude !== null && longitude !== null,
     staleTime: 1000 * 60 * 5, // 5 minutes fresh
     gcTime: 1000 * 60 * 30,    // 30 minutes in cache
   });
@@ -26,7 +26,7 @@ export function useForecast(latitude: number | null, longitude: number | null) {
   return useQuery<ForecastData>({
     queryKey: weatherKeys.forecast(latitude, longitude),
     queryFn: () => getForecast(latitude!, longitude!),
-    enabled: !!latitude && !!longitude,
+    enabled: latitude !== null && longitude !== null,
     staleTime: 1000 * 60 * 15, // Forecasts change even less often
   });
 }
