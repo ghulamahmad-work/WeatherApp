@@ -3,31 +3,18 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import { Search, MapPin, Loader2 } from "lucide-react";
 import { useCitySearch } from "@/app/hooks/UseWeather";
+import { useWeatherContext } from "@/app/context/WeatherContext";
+import { City } from "@/app/types/weather";
 
-interface City {
-  id: number;
-  name: string;
-  country: string;
-  admin1?: string;
-  latitude: number;
-  longitude: number;
-}
+export default function NavBar() {
+  const {
+    unit,
+    onUnitChange,
+    onLocationSelect,
+    onRequestLocation,
+    isLoading,
+  } = useWeatherContext();
 
-interface NavBarProps {
-  onLocationSelect: (location: City) => void;
-  unit: "C" | "F";
-  onUnitChange: (unit: "C" | "F") => void;
-  onRequestLocation: () => void;
-  isLocating?: boolean;
-}
-
-export default function NavBar({
-  onLocationSelect,
-  unit,
-  onUnitChange,
-  onRequestLocation,
-  isLocating = false,
-}: NavBarProps) {
   const [query, setQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -47,7 +34,7 @@ export default function NavBar({
     setDropdownOpen(true);
   };
 
-  const handleCitySelect = (city: City) => {
+  const onCityClick = (city: City) => {
     onLocationSelect(city);
     setQuery("");
     setDropdownOpen(false);
@@ -72,8 +59,8 @@ export default function NavBar({
 
         {/* CENTER: Search (Desktop only) */}
         <div className="hidden md:flex justify-center w-full">
-<div className="w-full px-2 md:px-4 relative">            
-  <div className="flex items-center gap-2 bg-[#979797] rounded-lg px-3.5 py-3.5">
+          <div className="w-full px-2 md:px-4 relative">
+            <div className="flex items-center gap-2 bg-[#979797] rounded-lg px-3.5 py-3.5">
               <Search size={24} color="#FFFFFF" />
               <input
                 type="text"
@@ -96,7 +83,7 @@ export default function NavBar({
                   cities.map((city: City) => (
                     <button
                       key={city.id}
-                      onClick={() => handleCitySelect(city)}
+                      onClick={() => onCityClick(city)}
                       className="w-full text-left px-4 py-3 text-white text-sm hover:bg-[#2c2c2c] transition-colors border-b border-[#2c2c2c] last:border-0"
                     >
                       {city.name}
@@ -122,57 +109,54 @@ export default function NavBar({
           </button>
 
           {/* Location */}
-<>
-  {/* Mobile + Tablet → Icon */}
-  <button
-    onClick={onRequestLocation}
-    disabled={isLocating}
-    className={`lg:hidden text-white ${isLocating ? "opacity-50" : ""}`}
-  >
-    {isLocating ? <Loader2 size={22} className="animate-spin" /> : <MapPin size={22} />}
-  </button>
+          <>
+            {/* Mobile + Tablet → Icon */}
+            <button
+              onClick={onRequestLocation}
+              disabled={isLoading}
+              className={`lg:hidden text-white ${isLoading ? "opacity-50" : ""}`}
+            >
+              {isLoading ? <Loader2 size={22} className="animate-spin" /> : <MapPin size={22} />}
+            </button>
 
-  {/* Desktop only → Full button */}
-  <button
-    onClick={onRequestLocation}
-    disabled={isLocating}
-    className={`hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1a1a1a] text-white text-sm font-medium transition-all border border-[#2c2c2c] ${
-      isLocating ? "opacity-70 cursor-not-allowed" : "hover:bg-[#2c2c2c]"
-    }`}
-  >
-    {isLocating ? (
-      <>
-        <Loader2 size={16} className="animate-spin" />
-        Locating...
-      </>
-    ) : (
-      <>
-        <MapPin size={16} />
-        Use Current Location
-      </>
-    )}
-  </button>
-</>
+            {/* Desktop only → Full button */}
+            <button
+              onClick={onRequestLocation}
+              disabled={isLoading}
+              className={`hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#1a1a1a] text-white text-sm font-medium transition-all border border-[#2c2c2c] ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#2c2c2c]"
+                }`}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Locating...
+                </>
+              ) : (
+                <>
+                  <MapPin size={16} />
+                  Use Current Location
+                </>
+              )}
+            </button>
+          </>
 
           {/* Unit Toggle */}
           <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 scale-90 md:scale-100">
             <button
               onClick={() => onUnitChange("C")}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                unit === "C"
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${unit === "C"
                   ? "bg-white text-black"
                   : "text-white hover:text-gray-300"
-              }`}
+                }`}
             >
               °C
             </button>
             <button
               onClick={() => onUnitChange("F")}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                unit === "F"
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${unit === "F"
                   ? "bg-white text-black"
                   : "text-white hover:text-gray-300"
-              }`}
+                }`}
             >
               °F
             </button>
@@ -182,9 +166,8 @@ export default function NavBar({
 
       {/* MOBILE SEARCH OVERLAY */}
       <div
-        className={`fixed top-0 left-0 w-full h-full bg-[#080808] z-999 transition-transform duration-300 ${
-          mobileSearchOpen ? "translate-x-0" : "translate-x-full"
-        } md:hidden`}
+        className={`fixed top-0 left-0 w-full h-full bg-[#080808] z-999 transition-transform duration-300 ${mobileSearchOpen ? "translate-x-0" : "translate-x-full"
+          } md:hidden`}
       >
         <div className="p-4 flex items-center gap-3 border-b border-[#2c2c2c]">
 
@@ -221,7 +204,7 @@ export default function NavBar({
                 <button
                   key={city.id}
                   onClick={() => {
-                    handleCitySelect(city);
+                    onCityClick(city);
                     setMobileSearchOpen(false);
                   }}
                   className="w-full text-left px-4 py-3 text-white text-sm border-b border-[#2c2c2c]"
@@ -237,3 +220,4 @@ export default function NavBar({
     </>
   );
 }
+

@@ -1,13 +1,15 @@
 import { useMemo } from "react";
 import { CloudRain } from "lucide-react";
 import { convertTemp, getWeatherIcon } from "@/app/utils/weatherUtils";
+import { useWeatherContext } from "@/app/context/WeatherContext";
+import { WeatherData } from "@/app/types/weather";
 
 interface HourlyForecastProps {
-  weather: any;
-  unit: "C" | "F";
+  weather: WeatherData;
 }
 
-export default function HourlyForecast({ weather, unit }: HourlyForecastProps) {
+export default function HourlyForecast({ weather }: HourlyForecastProps) {
+  const { unit } = useWeatherContext();
   const hourly = weather?.hourly;
   const unitSymbol = unit === "C" ? "°C" : "°F";
 

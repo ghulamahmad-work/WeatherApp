@@ -1,20 +1,19 @@
 import { convertTemp, getWeatherIcon } from "@/app/utils/weatherUtils";
+import { useWeatherContext } from "@/app/context/WeatherContext";
+import { WeatherData } from "@/app/types/weather";
 
 interface CurrentWeatherProps {
-  location: { name: string; country: string };
-  weather: any;
-  unit: "C" | "F";
+  weather: WeatherData;
 }
 
 export default function CurrentWeather({
-  location,
   weather,
-  unit,
 }: CurrentWeatherProps) {
+  const { location, unit } = useWeatherContext();
   const current = weather?.current;
   const unitSymbol = unit === "C" ? "°C" : "°F";
 
-  if (!current) return null;
+  if (!current || !location) return null;
 
   return (
     <div className="bg-black/10 rounded-2xl p-4 sm:p-6 md:p-8 w-full">

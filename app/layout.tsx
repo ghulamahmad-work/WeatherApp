@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ContentLayout from "./ContentLayout";
 import QueryProvider from "./providers/QueryProvider";
+import { WeatherProvider } from "./context/WeatherContext";
 
 export const metadata: Metadata = {
   title: "Dev-Weather",
@@ -16,7 +17,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <QueryProvider>
-          <ContentLayout>{children}</ContentLayout>
+          <WeatherProvider>
+            <ContentLayout>{children}</ContentLayout>
+          </WeatherProvider>
         </QueryProvider>
       </body>
     </html>

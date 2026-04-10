@@ -1,11 +1,10 @@
 "use client";
 import { MapPin, Loader2 } from "lucide-react";
-interface EmptyStateProps {
-  onRequestLocation: () => void;
-  isLocating?: boolean;
-}
+import { useWeatherContext } from "@/app/context/WeatherContext";
 
-export default function EmptyState({ onRequestLocation, isLocating = false }: EmptyStateProps) {
+export default function EmptyState() {
+  const { onRequestLocation, isLoading } = useWeatherContext();
+
   return (
     <div className="flex flex-col md:flex-row items-center flex-1 px-4 md:px-0 py-8 md:py-0">
       {/* Top/Left — Big Location Icon */}
@@ -30,12 +29,12 @@ export default function EmptyState({ onRequestLocation, isLocating = false }: Em
 
         <button
           onClick={onRequestLocation}
-          disabled={isLocating}
+          disabled={isLoading}
           className={`flex items-center gap-2 px-5 py-2.5 rounded-lg bg-black text-white text-sm font-medium transition-colors mt-2 ${
-            isLocating ? "opacity-70 cursor-not-allowed" : "hover:bg-black/80 cursor-pointer"
+            isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-black/80 cursor-pointer"
           }`}
         >
-          {isLocating ? (
+          {isLoading ? (
             <>
               <Loader2 size={15} className="animate-spin" />
               Locating...
@@ -50,4 +49,4 @@ export default function EmptyState({ onRequestLocation, isLocating = false }: Em
       </div>
     </div>
   );
-}
+}

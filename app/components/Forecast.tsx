@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { Wind, Droplets, Sunset, Sunrise } from "lucide-react";
 import { convertTemp, getWeatherIcon, getUVLabel } from "@/app/utils/weatherUtils";
+import { useWeatherContext } from "@/app/context/WeatherContext";
+import { ForecastData } from "../types/weather";
 
 interface ForecastProps {
-  forecast: any;
-  unit: "C" | "F";
+  forecast: ForecastData;
 }
 
 function formatTime(isoString: string): string {
@@ -15,7 +16,8 @@ function formatTime(isoString: string): string {
   });
 }
 
-export default function Forecast({ forecast, unit }: ForecastProps) {
+export default function Forecast({ forecast }: ForecastProps) {
+  const { unit } = useWeatherContext();
   const daily = forecast?.daily;
   const unitSymbol = unit === "C" ? "°C" : "°F";
 
@@ -36,7 +38,6 @@ export default function Forecast({ forecast, unit }: ForecastProps) {
       <div className="space-y-2">
         {daily.time.slice(0, 7).map((date: string, i: number) => {
           const uv = daily.uv_index_max?.[i];
-          const uvInfo = uv !== undefined ? getUVLabel(uv) : null;
           const rainChance = daily.precipitation_probability_max?.[i];
           const wind = daily.wind_speed_10m_max?.[i];
           const sunrise = daily.sunrise?.[i];
@@ -56,7 +57,7 @@ export default function Forecast({ forecast, unit }: ForecastProps) {
                 </span>
               </div>
 
-              {/* Temp range bar (Moved up in DOM so it shares top row on mobile with Icon) */}
+              {/* Temp range bar */}
               <div className="flex items-center justify-end md:justify-center gap-2 text-sm shrink-0 w-1/2 md:w-auto md:order-last">
                 <span className="text-black w-8 md:w-10 text-right">
                   {convertTemp(daily.temperature_2m_min[i], unit)}{unitSymbol}
