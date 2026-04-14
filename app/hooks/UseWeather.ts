@@ -2,9 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCurrentWeather, getForecast, searchCity } from "@/app/services/WeatherApi";
 import { WeatherData, ForecastData } from "@/app/types/weather";
 
-/**
- * Query Key Factory for centralized key management
- */
+
 export const weatherKeys = {
   all: ["weather"] as const,
   current: (lat: number | null, lon: number | null) => [...weatherKeys.all, "current", lat, lon] as const,
@@ -17,8 +15,8 @@ export function useWeather(latitude: number | null, longitude: number | null) {
     queryKey: weatherKeys.current(latitude, longitude),
     queryFn: () => getCurrentWeather(latitude!, longitude!),
     enabled: latitude !== null && longitude !== null,
-    staleTime: 1000 * 60 * 5, // 5 minutes fresh
-    gcTime: 1000 * 60 * 30,    // 30 minutes in cache
+    staleTime: 1000 * 60 * 5, 
+    gcTime: 1000 * 60 * 30,    
   });
 }
 

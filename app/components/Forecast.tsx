@@ -49,7 +49,7 @@ export default function Forecast({ forecast }: ForecastProps) {
               className="flex flex-wrap md:flex-nowrap items-center justify-between gap-y-4 md:gap-y-0 py-3 px-4 rounded-xl bg-black/9 hover:bg-black/10 transition-colors"
             >
               {/* Icon + Day */}
-              <div className="flex items-center gap-3 w-1/2 md:w-36 shrink-0">
+              <div className="flex items-center gap-3 w-1/2 md:w-32 shrink-0">
                 {getWeatherIcon(daily.weather_code[i], "w-6 h-6")}
                 <span className="text-black font-medium text-sm">
                   {i === 0 ? "Today" : i === 1 ? "Tomorrow" :
@@ -58,12 +58,12 @@ export default function Forecast({ forecast }: ForecastProps) {
               </div>
 
               {/* Temp range bar */}
-              <div className="flex items-center justify-end md:justify-center gap-2 text-sm shrink-0 w-1/2 md:w-auto md:order-last">
-                <span className="text-black w-8 md:w-10 text-right">
+              <div className="flex items-center justify-end md:justify-center gap-3 md:gap-4 text-sm shrink-0 w-1/2 md:w-auto md:order-last">
+                <span className="text-black w-14 md:w-16 text-right whitespace-nowrap tabular-nums">
                   {convertTemp(daily.temperature_2m_min[i], unit)}{unitSymbol}
                 </span>
 
-                <span className="text-black font-medium w-8 md:w-10">
+                <span className="text-black font-medium w-14 md:w-16 whitespace-nowrap tabular-nums">
                   {convertTemp(daily.temperature_2m_max[i], unit)}{unitSymbol}
                 </span>
               </div>
@@ -77,7 +77,7 @@ export default function Forecast({ forecast }: ForecastProps) {
               </div>
 
               {/* Wind */}
-              <div className="flex items-center gap-1 w-1/4 md:w-24 shrink-0 md:justify-center">
+              <div className="flex items-center gap-1 w-1/4 md:w-20 shrink-0 md:justify-center">
                 <Wind className="w-3 h-3 md:w-4 md:h-4 text-white" />
                 <span className="text-black text-xs md:text-sm">
                   {wind !== undefined ? `${Math.round(wind)} km/h` : "—"}
@@ -85,16 +85,16 @@ export default function Forecast({ forecast }: ForecastProps) {
               </div>
 
               {/* UV Index */}
-              <div className="w-1/4 md:w-30 shrink-0 md:text-center flex items-center">
+              <div className="w-1/4 md:w-24 shrink-0 md:text-center flex items-center">
                 {uv !== undefined && (
                   <span className="text-xs md:text-sm font-medium text-black">
-                    UV {Math.round(uv)}<span className="hidden md:inline"> · {getUVLabel(uv)}</span>
+                    UV {Math.round(uv)}<span className="hidden lg:inline"> · {getUVLabel(uv)}</span>
                   </span>
                 )}
               </div>
 
               {/* Sunrise / Sunset */}
-              <div className="flex flex-col sm:flex-row items-end sm:items-center justify-center gap-1 sm:gap-3 w-1/4 md:w-40 shrink-0 md:justify-center">
+              <div className="flex flex-col sm:flex-row items-end sm:items-center justify-center gap-1 sm:gap-3 w-1/4 md:w-36 shrink-0 md:justify-center">
                 {sunrise && (
                   <div className="flex items-center gap-1">
                     <Sunrise className="w-3 h-3 md:w-4 md:h-4 text-orange-300" />
